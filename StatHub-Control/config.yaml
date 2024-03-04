@@ -1,0 +1,14 @@
+﻿# Server
+# 服务器监听
+listen : "http://127.0.0.1:9943/"
+# Node池
+# Node Pool
+node:
+  - name: "Private Node"
+    url: "ws://192.168.0.185:9944"
+#  - name: "Public Node"
+#    url: "ws://node-0.gemini-3h.subspace.network.ooplay.cn"
+#  - name: "Japan Node"
+#    url: "ws://jp.subspace.network.ooplay.cn"
+#  - name: "America Node"
+#    url: "ws://us.subspace.network.ooplay.cn"

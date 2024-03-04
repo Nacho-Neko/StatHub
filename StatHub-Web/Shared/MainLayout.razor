@@ -1,0 +1,40 @@
+﻿@using AntDesign
+@inherits LayoutComponentBase
+
+<Layout Style="min-height: 100vh; ">
+    <Sider Collapsible>
+        <div class="logo" />
+        <Menu Theme="MenuTheme.Dark" DefaultSelectedKeys=@(new[]{"1"}) Mode="MenuMode.Inline" >
+            <MenuItem Key="index" RouterLink="/">
+                <Icon Type="pie-chart" Theme="outline" /> 
+                <span>首页</span>
+            </MenuItem>
+            <MenuItem Key="farmhub" RouterLink="/farmhub">
+                <Icon Type="pie-chart" Theme="outline" /> 
+                <span>农场</span>
+            </MenuItem> 
+        </Menu>
+    </Sider>
+    <Layout Class="site-layout" >
+        <Header Class="site-layout-background" Style=" padding: 0 ;" ></Header>
+        <Content Style="margin:0 16px;" >
+<main> 
+                @Body
+</main>
+        </Content>
+        <Footer Style="text-align:center ">Ant Design ©2018 Created by Ant UED</Footer>
+    </Layout>
+</Layout>
+
+
+<style>
+    .logo {
+        height: 32px;
+        background: rgba(255, 255, 255, 0.2);
+        margin: 16px;
+    }
+
+    .site-layout .site-layout-background {
+        background: #fff;
+    }
+</style>

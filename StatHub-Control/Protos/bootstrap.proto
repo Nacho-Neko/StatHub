@@ -1,0 +1,15 @@
+﻿import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+package greet;
+
+syntax = "proto3";
+option csharp_namespace = "BootstrapService";
+
+service BootstrapRpc {
+  rpc Bootstrap () returns (BootstrapReply) {}
+}
+
+message BootstrapReply{
+  string node_rpc = 1;
+}

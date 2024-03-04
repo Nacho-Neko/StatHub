@@ -1,0 +1,109 @@
+﻿@page "/farmhub"
+
+<PageTitle>Farm-Hub</PageTitle>
+
+@using AntDesign
+@using StatHub_Web.Data
+
+<PageHeader>
+       <PageHeaderTitle>服务器管理</PageHeaderTitle>
+        <PageHeaderExtra>
+            <Button Color="Color.Geekblue6" Type="@ButtonType.Primary" OnClick="() => {model_visible = true;}">创建</Button>
+        </PageHeaderExtra>
+</PageHeader>
+
+
+<Table DataSource="@data" TItem="FarmData" OnExpand="OnRowExpand">
+  <ColumnDefinitions>
+    <PropertyColumn Property="c=>c.Name" />
+    <PropertyColumn Property="c=>c.Update" />
+    <ActionColumn Title="Action">
+      <Space>
+          <SpaceItem><Button OnClick="()=>Change(context.Id)">修改</Button></SpaceItem>
+          <SpaceItem><Button Danger OnClick="()=>Delete(context.Id)">Delete</Button></SpaceItem>
+     </Space>
+    </ActionColumn>
+  </ColumnDefinitions>
+  <ExpandTemplate Context="rowData">
+    <Table DataSource="rowData.Data.farmDiskDatas" Loading="rowData.Data.farmDiskDatas==null" HidePagination>
+      <PropertyColumn Property="c=>c.path" />
+      <PropertyColumn Property="c=>c.size" />
+      <Column TData="string" Title="Status">
+        <span>
+          <Badge Status="success" />
+          Finished
+        </span>
+      </Column>
+    </Table>
+  </ExpandTemplate>
+</Table>
+
+<FarmerModalComponent farmData="@farmData" Show="@model_visible" AfterClose="() =>{ model_visible = false;  return  Task.CompletedTask;}" />
+
+@using AntDesign.TableModels
+@using System.ComponentModel
+@using StatHub.Web.Model;
+@using StatHub.Web.Pages.Component
+
+@inject FarmerModel farmerModel;
+
+@code {
+    private bool model_visible { get; set; }
+    FarmData farmData;
+    List<FarmData> data = new List<FarmData>();
+    protected override async Task OnInitializedAsync()
+    {
+        List<FarmerModel> farmerModels = await farmerModel.Farmers();
+        foreach (var farmerModel in farmerModels)
+        {
+            FarmData farmData = new FarmData();
+            farmData.Name = farmerModel.Name;
+            farmData.Update = farmerModel.Update_at;
+            farmData.farmDiskDatas = new List<FarmDiskData>(farmerModel.farmPaths.Count);
+            foreach (var farmPath in farmerModel.farmPaths)
+            {
+                FarmDiskData farmDiskData = new FarmDiskData();
+                farmDiskData.Id = farmPath.Id;
+                farmDiskData.path = farmPath.Path;
+                farmDiskData.size = farmPath.Size;
+                farmData.farmDiskDatas.Add(farmDiskData);
+            }
+            data.Add(farmData);
+        }
+        base.OnInitialized();
+    }
+    async Task Change(int Id) {
+        model_visible = true;
+
+    }
+
+    async Task Delete(int Id)
+    {
+        model_visible = true;
+
+    }
+    async Task OnRowExpand(RowData<FarmData> rowData)
+    {
+        if (rowData.Data != null)
+        {
+            return;
+        }
+        await Task.Delay(1000);
+        StateHasChanged();
+    }
+
+    public class FarmData
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public DateTime Update { get; set; }
+        public List<FarmDiskData> farmDiskDatas { get; set; }
+    }
+
+    public class FarmDiskData
+    {
+        public int Id { get; set; }
+        public string path { get; set; }
+        public string size { get; set; }
+    }
+}

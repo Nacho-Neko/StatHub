@@ -1,0 +1,24 @@
+﻿# 农场的名字 这个必须是唯一的
+farm: "farm-dev"
+
+# 钱包地址 st 小写开头的，可以不用改帮我挖
+reward_address: "st9ZjdhzNUpUssD1DNwZFeg5wcuNN5gcNCebkz5zmX5UNxern"
+# 绘图的时候是否同时也进行农场
+# 关闭后绘图不会爆快但是可以少量提速
+farm_during_initial_plotting: false
+
+# 绘图的线程数量 默认是 CPU0 核心的数量
+# plotting_thread: 24
+# 重绘时使用的线程数量 默认是 CPU0 核心的 二分之一
+# replotting_thread: 24
+# 农场的线程 扫盘的线程数量
+# farming_thread: 12
+
+# 节点代理 提供故障转移
+# 使用代理节点时无法自定义NodeRpc
+node_agent: true
+
+node_rpc_url: "ws://192.168.0.237:9944"
+paths:
+  -  "/mnt/nvme0n1p1,size=3.4Tib"
+  -  "/mnt/nvme0n1p2,size=3.4Tib"

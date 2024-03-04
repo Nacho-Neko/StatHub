@@ -1,0 +1,76 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "FramRpcService";
+
+package greet;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+
+enum Status {
+  STOP = 0;  // 推荐将第一个枚举值设为0
+  STARING = 1;
+  PICESYNC = 2;
+  PLOT = 3;
+  REPLOT = 4;
+}
+
+enum LogType {
+  Tarce = 0;  // 推荐将第一个枚举值设为0
+  Debug = 1;
+  Info = 2;
+  Warn = 3;
+  Error = 4;
+}
+
+service FarmRpc {
+  rpc StarArg (StarArgRequest) returns (StarArgReply) {}
+  rpc Status (StatusRequest) returns (StatusReply) {}
+  rpc Logger (LoggerRequest) returns (google.protobuf.Empty) {}
+  rpc Path(PathRequest)returns (PathReply) {}
+  rpc SectorIndex(SectorRequest)returns (google.protobuf.Empty) {}
+  rpc PieceCache(PieceRequest)returns (google.protobuf.Empty) {}
+}
+
+message StatusRequest{
+  Status status = 1;
+}
+message StatusReply {
+   bool result = 1;
+}
+message PathReply {
+   bool result = 1;
+}
+message LoggerRequest {
+  LogType logtype = 1;
+  string logger = 2;
+}
+message StarArgReply {
+  string reward_address = 2;
+  string node_rpc_url = 3;
+  string bootstrap_nodes = 4;
+  repeated string path = 5;
+  repeated string reserved_peers = 6;
+  google.protobuf.BoolValue allow_private_ips = 1;
+  google.protobuf.BoolValue farm_during_initial_plotting = 7;
+  google.protobuf.BoolValue disable_bootstrap_on_start = 8;
+}
+message StarArgRequest {
+   bool mainet = 1;
+}
+message PathRequest {
+   fixed32 disk = 1;
+   string path = 2;
+   string size = 3;
+}
+message SectorRequest {
+   fixed32 disk = 1;
+   fixed32 index = 2;
+   string complete = 3;
+}
+
+message PieceRequest{
+  fixed32 diskindex = 1;
+  float complete = 2;
+}

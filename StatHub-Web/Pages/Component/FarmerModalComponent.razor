@@ -1,0 +1,142 @@
+﻿@using AntDesign;
+@using static StatHub.Web.Pages.Hub;
+
+<Modal Title="创建" @bind-Visible="@Show" DestroyOnClose=true AfterClose=AfterClose OnOk="@Submit" >
+    <FormProvider  OnFormFinish="OnFormFinish">
+    <Form Model="@form_data"
+        Name="basicForm"
+           LabelColSpan="8"
+           WrapperColSpan="16">
+            <FormItem Label="farmName">
+                <Cascader @bind-Value="@context.farmName" Options="nodeCascader" />
+             </FormItem>
+
+
+         <FormItem Label="Disk List">
+            @if (context.disks.Count > 0)
+            {
+                <ul>
+                   @for (int i = 0; i < context.disks.Count; i++)
+                    {
+                        <li class="user">
+                               path=@(context.disks[i].path),size=@(context.disks[i].size)
+                        </li>
+                    }
+                </ul>
+            }
+       </FormItem>
+             <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                <Button HtmlType="submit" Type="@ButtonType.Primary">
+                提交
+            </Button>
+            <Button HtmlType="button" Style="margin: 0 8px" OnClick="ShowUserModal">
+                添加硬盘
+            </Button>
+        </FormItem>
+     </Form>
+        <Modal Title=@("Basic Drawer")
+           Visible="@_modelVisible"
+           OnOk="@HandleOk"
+           OnCancel="@HideUserModal">
+        <Form @ref="@_userForm" Model="@_userFormModel" Layout="@FormLayout.Vertical" Name="diskForm" >
+            <FormItem Label="Path">
+                <Input @bind-Value="@context.path" />
+            </FormItem>
+            <FormItem Label="Size">
+                <Input @bind-Value="@context.size" />
+            </FormItem>
+        </Form>
+        </Modal>
+    </FormProvider>
+</Modal> 
+
+@inject IMessageService _message
+
+@functions {
+    private bool _modelVisible = false;
+    private void HandleOk(MouseEventArgs args)
+    {
+        _userForm.Submit();
+        _modelVisible = false;
+    }
+    private void HideUserModal()
+    {
+        _modelVisible = false;
+        _userForm.Reset();
+    }
+    private void ShowUserModal()
+    {
+        _modelVisible = true;
+    }
+
+     private void OnFormFinish(FormProviderFinishEventArgs args)
+    {
+        if (args.FinishForm.Name == "diskForm")
+        {
+            // if you can't get the reference of _userForm and _baseFormModel, you should:
+            Disk disk = (Disk)args.FinishForm.Model;
+            Data userGroup = (Data)args.Forms["basicForm"].Model;
+            userGroup.disks.Add(new Disk { path = disk.path, size = disk.size });
+
+            // if you have the reference of _userForm and _baseFormModel, you can:
+            //_baseFormModel.Users.Add(new User { Name = _userFormModel.Name, Age = _userFormModel.Age });
+        }
+        HideUserModal();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+}
+
+@functions {
+
+
+    private Form<Disk> _userForm;
+    private Disk _userFormModel = new Disk();
+
+    [Parameter]
+    public bool Show { get; set; }
+    [Parameter]
+    public FarmData farmData { get; set; }
+    [Parameter]
+    public Func<Task> AfterClose { get; set; }
+
+
+    private async Task Submit(MouseEventArgs e)
+    {
+        await _message.Loading(config);
+        bool flag = false;
+        if (flag)
+        {
+            config.Content = "完成";
+            await _message.Success(config);
+            return;
+        }
+        config.Content = "创建失败";
+        await _message.Error(config);
+        return;
+    }
+}
+
+@code {
+    public Data form_data = new Data() ;
+    private List<CascaderNode> nodeCascader = new List<CascaderNode>();
+    MessageConfig config = new MessageConfig()
+        {
+            Content = "提交中...",
+            Key = $"updatable-{DateTime.Now.Ticks}"
+        };
+    public class Disk
+    {
+
+        public string path { get; set; }
+        public string size { get; set; }
+    }
+    public class Data
+    {
+
+        public string farmName { get; set; }
+        public List<Disk> disks { get; set; } = new List<Disk>();
+    }
+}
